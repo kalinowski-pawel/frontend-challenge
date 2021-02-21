@@ -19,7 +19,6 @@ export class Home extends React.Component<Props, State> {
 
     async componentDidMount() {
         const books = await getBooks();
-        console.log({books})
 
         this.setState({
             books: books
