@@ -22,7 +22,8 @@ export class SearchBox extends React.Component<Props, State> {
         }
     }
 
-    onClick = (): void => {
+    onSubmit = (e: React.FormEvent<EventTarget>): void => {
+        e.preventDefault();
         this.props.onClick(this.state.phrase)
     }
 
@@ -35,16 +36,23 @@ export class SearchBox extends React.Component<Props, State> {
     render() {
         return (
             <Box className={styles.searchBox} p={2} m={2}>
-                <TextField
-                    label="search your favorite book"
-                    variant="standard"
-                    name="phrase"
-                    value={this.state.phrase}
-                    onChange={this.onChange}
-                />
-                <Button title="Search" variant="outlined" size="small" onClick={this.onClick}>
-                    Search
-                </Button>
+                <form onSubmit={this.onSubmit} className={styles.form}>
+                    <TextField
+                        label="search your favorite book"
+                        variant="standard"
+                        name="phrase"
+                        value={this.state.phrase}
+                        onChange={this.onChange}
+                    />
+                    <Button
+                        title="Search"
+                        variant="outlined"
+                        size="small"
+                        type="submit"
+                    >
+                        Search
+                    </Button>
+                </form>
             </Box>
         );
     }
