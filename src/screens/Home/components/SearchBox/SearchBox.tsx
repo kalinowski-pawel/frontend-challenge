@@ -5,10 +5,6 @@ import Button from "@material-ui/core/Button";
 
 import styles from './SearchBox.module.scss';
 
-export interface MapToString {
-    [key: string]: string;
-}
-
 interface Props {
     onClick: Function;
 }
