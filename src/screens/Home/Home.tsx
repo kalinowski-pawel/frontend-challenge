@@ -2,6 +2,7 @@ import * as React from 'react';
 import {getBooks} from "../../services/Books";
 import {Header} from "./parts/Header/Header";
 import {Footer} from "./parts/Footer/Footer";
+import {SearchBox} from "./components/SearchBox/SearchBox";
 
 interface Props {
 
@@ -27,6 +28,10 @@ export class Home extends React.Component<Props, State> {
         })
     }
 
+    onClick = (text: string) => {
+        console.log({text})
+    }
+
     get header() {
         return <Header/>
     }
@@ -35,10 +40,15 @@ export class Home extends React.Component<Props, State> {
         return <Footer/>
     }
 
+    get searchBox(){
+        return <SearchBox onClick={this.onClick}/>
+    }
+
     render() {
         return (
             <React.Fragment>
                 {this.header}
+                {this.searchBox}
                 <div>
                     <label>Title: </label>
                     <span>{this.state.books?.data?.items[0]?.volumeInfo?.title}</span>
