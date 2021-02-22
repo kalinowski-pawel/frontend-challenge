@@ -10,7 +10,7 @@ interface Props {
 }
 
 interface State {
-    phrase?: string | null;
+    phrase: string;
 }
 
 export class SearchBox extends React.Component<Props, State> {
