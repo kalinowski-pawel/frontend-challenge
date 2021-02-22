@@ -21,15 +21,21 @@ export class Home extends React.Component<Props, State> {
     }
 
     async componentDidMount() {
-        const books = await getBooks();
+
+    }
+
+    //TODO move into middleware(?)
+    getBooks = async(searchPhrase: string) => {
+        const books = await getBooks(searchPhrase);
 
         this.setState({
             books: books
         })
     }
 
-    onClick = (text: string) => {
-        console.log({text})
+
+    onClick = (searchPhrase: string) => {
+        this.getBooks(searchPhrase);
     }
 
     get header() {
