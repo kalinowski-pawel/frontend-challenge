@@ -70,6 +70,7 @@
     "react/jsx-boolean-value": "off",
     "react/prop-types": "off",
     "react/no-unescaped-entities": "off",
+    "react/no-unused-state": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-wrap-multilines": "off",
     "react/destructuring-assignment": "off",

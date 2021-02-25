@@ -1,29 +1,36 @@
 import * as React from 'react';
 import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
+import { BooksList } from './components/BooksList/BooksList';
 import { SearchBox } from './components/SearchBox/SearchBox';
-import {getBooksList} from "../../models/Books";
+import { Pagination } from './components/Pagination/Pagination';
+import { fetchBooks } from '../../models/Books';
+import { Book } from '../../types/Books';
 
-interface Props {}
 
 interface State {
-  books: any;
+  books: Book[] | [];
+  isLoading: boolean;
+  totalItems?: number;
+  searchPhrase?: string;
+  startIndex: number;
 }
 
-export class Home extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class Home extends React.Component<any, State> {
+  constructor(props: any) {
     super(props);
     this.state = {
-      books: '',
+      books: [],
+      isLoading: false,
+      startIndex: 0,
     };
   }
 
-  onClick = (searchPhrase: string) => {
-    const booksList = getBooksList(searchPhrase);
-    console.log({booksList})
+  onClick = async (searchPhrase: string) => {
     this.setState({
-      books: getBooksList(searchPhrase),
-    });
+      isLoading: true,
+      searchPhrase,
+    }, () => this.fetchData(searchPhrase));
   };
 
   get header() {
@@ -38,21 +45,40 @@ export class Home extends React.Component<Props, State> {
     return <SearchBox onClick={this.onClick} />;
   }
 
+  get pagination() {
+    return <Pagination totalItems={this.state.totalItems} startIndex={this.state.startIndex} />;
+  }
+
+  fetchData = async (searchPhrase: string, startIndex?: number) => {
+    const booksList = await fetchBooks(searchPhrase, startIndex);
+    this.setState((prevState: State) => ({
+      books: [...prevState.books, ...booksList?.data?.items],
+      totalItems: booksList?.data?.totalItems,
+      isLoading: false,
+    }));
+  };
+
   render() {
+    const { isLoading, totalItems, books, startIndex } = this.state;
     return (
       <>
         {this.header}
         {this.searchBox}
-        <div>
-          <span>Title: </span>
-          <span>{this.state.books[0]?.volumeInfo?.title}</span>
-        </div>
-        <div>
-          <span>Subtitle: </span>
-          <span>{this.state.books[0]?.volumeInfo?.subtitle}</span>
-        </div>
+        {this.pagination}
+        {isLoading ?
+          (<div>Searching books...</div>)
+          :
+          (
+            <BooksList
+              books={books}
+              startIndex={startIndex}
+              getNextBooks={this.fetchData}
+            />)
+        }
+        {!isLoading && totalItems && (<div>Total items: {totalItems}</div>)}
         {this.footer}
       </>
     );
   }
+
 }
