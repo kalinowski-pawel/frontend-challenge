@@ -3,13 +3,13 @@ import { map } from 'lodash';
 import { Book } from '../../../../types/Books'
 
 interface Props {
-  books: Book[]
+  books: Book[] | any;
   getNextBooks: Function;
-  startIndex: number;
+  startIndex?: number;
 }
 
 interface State {
-  startIndex: number;
+  startIndex?: number;
 }
 
 export class BooksList extends React.Component<Props, State> {

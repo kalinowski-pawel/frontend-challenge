@@ -5,7 +5,7 @@ import styles from './Pagination.module.scss';
 
 interface Props {
   totalItems?: number;
-  startIndex: number;
+  startIndex?: number;
 }
 
 export class Pagination extends React.Component<Props, any> {
@@ -21,7 +21,7 @@ export class Pagination extends React.Component<Props, any> {
     return (
       <ul className={styles.pagination}>
         {this.props.totalItems && times(this.props.totalItems / 10, (item) => (
-          <li>{item}</li>
+          <li key={item}>{item}</li>
         ))}
       </ul>
 

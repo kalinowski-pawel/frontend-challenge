@@ -1,24 +1,10 @@
-import axios from 'axios';
+import { HandleErrors } from '../common/HandleErrors';
 import {getBooks} from '../services/Books';
 
 export const fetchBooks = async (searchPhrase: string, startIndex?: number) => {
     try {
         return await getBooks(searchPhrase, startIndex);
     }catch (e){
-        return handleErrors(e);
+        return HandleErrors(e);
     }
-
 }
-
-export const handleErrors = (error: any) => {
-    if (axios.isCancel(error)) {
-        return Promise.reject(error);
-    }
-    const { message } = error?.response?.data ?? {};
-
-    return Promise.reject(message);
-
-    // TODO handle no response from server
-    // return handleCriticalError(error);
-};
-

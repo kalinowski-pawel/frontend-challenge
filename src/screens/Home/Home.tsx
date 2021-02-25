@@ -2,19 +2,33 @@ import * as React from 'react';
 import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
 import { BooksList } from './components/BooksList/BooksList';
+import { UsersList } from './components/UsersList/UsersList';
 import { SearchBox } from './components/SearchBox/SearchBox';
 import { Pagination } from './components/Pagination/Pagination';
 import { fetchBooks } from '../../models/Books';
+import { fetch } from '../../models/Users';
 import { Book } from '../../types/Books';
+import { User } from '../../types/Users';
 
 
 interface State {
-  items: Book[] | [];
+  items: Book[] | User[] | [];
   isLoading: boolean;
   totalItems?: number;
   searchPhrase?: string;
-  startIndex: number;
+  startIndex?: number;
+  apiType: Type
 }
+
+enum Type {
+  Books,
+  Users
+}
+
+const API_TYPE = {
+  BOOKS: 0,
+  USERS: 1,
+};
 
 export class Home extends React.Component<any, State> {
   constructor(props: any) {
@@ -23,14 +37,21 @@ export class Home extends React.Component<any, State> {
       items: [],
       isLoading: false,
       startIndex: 0,
+      apiType: 1,
     };
+  }
+
+  async componentDidMount() {
+    if(this.state.apiType === API_TYPE.USERS) {
+      this.fetchUsers(0);
+    }
   }
 
   onClick = async (searchPhrase: string) => {
     this.setState({
       isLoading: true,
       searchPhrase,
-    }, () => this.fetchData(searchPhrase));
+    }, () => this.fetchBooks(searchPhrase));
   };
 
   get header() {
@@ -49,7 +70,46 @@ export class Home extends React.Component<any, State> {
     return <Pagination totalItems={this.state.totalItems} startIndex={this.state.startIndex} />;
   }
 
-  fetchData = async (searchPhrase: string, startIndex?: number) => {
+  get booksComponent() {
+    return (
+      <>
+        {this.searchBox}
+        {this.pagination}
+        {this.state.isLoading ?
+          (<div>Searching books...</div>)
+          :
+          (
+            <BooksList
+              books={this.state.items}
+              startIndex={this.state.startIndex}
+              getNextBooks={this.fetchBooks}
+            />)
+        }
+        {!this.state.isLoading && this.state.totalItems && (<div>Total items: {this.state.totalItems}</div>)}
+      </>
+    );
+  }
+
+  get usersComponent() {
+    return (
+      <>
+        {this.pagination}
+        {this.state.isLoading ?
+          (<div>Loading users...</div>)
+          :
+          (
+            <UsersList
+              users={this.state.items}
+              page={this.state.startIndex}
+              getUsers={this.fetchUsers}
+            />)
+        }
+        {!this.state.isLoading && this.state.totalItems && (<div>Total items: {this.state.totalItems}</div>)}
+      </>
+    );
+  }
+
+  fetchBooks = async (searchPhrase: string, startIndex?: number) => {
     const itemsList = await fetchBooks(searchPhrase, startIndex);
     this.setState((prevState: State) => ({
       items: [...prevState.items, ...itemsList?.data?.items],
@@ -58,24 +118,23 @@ export class Home extends React.Component<any, State> {
     }));
   };
 
+  fetchUsers = async (page: number) => {
+    const itemsList = await fetch(page);
+    this.setState({
+      items: itemsList?.data.data,
+      totalItems: itemsList?.data.total,
+      isLoading: false,
+    });
+  };
+
+
   render() {
     const { isLoading, totalItems, items, startIndex } = this.state;
     return (
       <>
         {this.header}
-        {this.searchBox}
-        {this.pagination}
-        {isLoading ?
-          (<div>Searching books...</div>)
-          :
-          (
-            <BooksList
-              books={items}
-              startIndex={startIndex}
-              getNextBooks={this.fetchData}
-            />)
-        }
-        {!isLoading && totalItems && (<div>Total items: {totalItems}</div>)}
+        {this.state.apiType === API_TYPE.BOOKS ? this.booksComponent : this.usersComponent}
+
         {this.footer}
       </>
     );
