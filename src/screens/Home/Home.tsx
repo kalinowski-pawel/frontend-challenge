@@ -93,7 +93,6 @@ export class Home extends React.Component<any, State> {
   get usersComponent() {
     return (
       <>
-        {this.pagination}
         {this.state.isLoading ?
           (<div>Loading users...</div>)
           :
