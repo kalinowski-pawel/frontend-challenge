@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { getBooks } from '../../services/Books';
 import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
 import { SearchBox } from './components/SearchBox/SearchBox';
+import {getBooksList} from "../../models/Books";
 
 interface Props {}
 
@@ -18,19 +18,12 @@ export class Home extends React.Component<Props, State> {
     };
   }
 
-  componentDidMount() {}
-
-  // TODO move into middleware(?)
-  getBooks = async (searchPhrase: string) => {
-    const books = await getBooks(searchPhrase);
-
-    this.setState({
-      books,
-    });
-  };
-
   onClick = (searchPhrase: string) => {
-    this.getBooks(searchPhrase);
+    const booksList = getBooksList(searchPhrase);
+    console.log({booksList})
+    this.setState({
+      books: getBooksList(searchPhrase),
+    });
   };
 
   get header() {
@@ -52,11 +45,11 @@ export class Home extends React.Component<Props, State> {
         {this.searchBox}
         <div>
           <span>Title: </span>
-          <span>{this.state.books?.data?.items[0]?.volumeInfo?.title}</span>
+          <span>{this.state.books[0]?.volumeInfo?.title}</span>
         </div>
         <div>
           <span>Subtitle: </span>
-          <span>{this.state.books?.data?.items[0]?.volumeInfo?.subtitle}</span>
+          <span>{this.state.books[0]?.volumeInfo?.subtitle}</span>
         </div>
         {this.footer}
       </>
