@@ -9,7 +9,7 @@ import { Book } from '../../types/Books';
 
 
 interface State {
-  books: Book[] | [];
+  items: Book[] | [];
   isLoading: boolean;
   totalItems?: number;
   searchPhrase?: string;
@@ -20,7 +20,7 @@ export class Home extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      books: [],
+      items: [],
       isLoading: false,
       startIndex: 0,
     };
@@ -50,16 +50,16 @@ export class Home extends React.Component<any, State> {
   }
 
   fetchData = async (searchPhrase: string, startIndex?: number) => {
-    const booksList = await fetchBooks(searchPhrase, startIndex);
+    const itemsList = await fetchBooks(searchPhrase, startIndex);
     this.setState((prevState: State) => ({
-      books: [...prevState.books, ...booksList?.data?.items],
-      totalItems: booksList?.data?.totalItems,
+      items: [...prevState.items, ...itemsList?.data?.items],
+      totalItems: itemsList?.data?.totalItems,
       isLoading: false,
     }));
   };
 
   render() {
-    const { isLoading, totalItems, books, startIndex } = this.state;
+    const { isLoading, totalItems, items, startIndex } = this.state;
     return (
       <>
         {this.header}
@@ -70,7 +70,7 @@ export class Home extends React.Component<any, State> {
           :
           (
             <BooksList
-              books={books}
+              books={items}
               startIndex={startIndex}
               getNextBooks={this.fetchData}
             />)

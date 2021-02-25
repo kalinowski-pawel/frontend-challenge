@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { times } from 'lodash';
 
+import styles from './Pagination.module.scss';
+
 interface Props {
   totalItems?: number;
   startIndex: number;
@@ -17,7 +19,7 @@ export class Pagination extends React.Component<Props, any> {
 
   render() {
     return (
-      <ul>
+      <ul className={styles.pagination}>
         {this.props.totalItems && times(this.props.totalItems / 10, (item) => (
           <li>{item}</li>
         ))}
