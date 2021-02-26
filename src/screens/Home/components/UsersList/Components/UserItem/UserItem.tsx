@@ -42,7 +42,7 @@ export function UserItem(props: Props) {
   };
 
   const onEdit = () => {
-    props.onEdit(props.user?.id);
+    props.onEdit(props.user);
   };
 
   return (<>

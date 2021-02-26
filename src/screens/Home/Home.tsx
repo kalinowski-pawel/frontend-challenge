@@ -48,7 +48,7 @@ export class Home extends React.Component<any, State> {
   }
 
   async componentDidMount() {
-    if(this.state.apiType === API_TYPE.USERS) {
+    if (this.state.apiType === API_TYPE.USERS) {
       this.fetchUsers(0);
     }
   }
@@ -137,12 +137,12 @@ export class Home extends React.Component<any, State> {
   onSaveUser = async (id?: number) => {
     console.log('save user', id);
     return null;
-  }
+  };
 
   onDeleteUser = (id: number) => {
     console.log('delete user', id);
     return null;
-  }
+  };
 
   // TODO check name convention for handle vs on functions
   onEditUser = (user: User) => {
@@ -150,37 +150,36 @@ export class Home extends React.Component<any, State> {
     this.setState({
       isEdit: true,
       isOpen: true,
-      user
-    })
-  }
+      user,
+    });
+  };
 
   onAddUser = () => {
     this.setState({
       isEdit: false,
       isOpen: true,
-    })
+    });
   };
 
   handleDialogClose = () => {
     this.setState({
       isOpen: false,
-    })
-  }
+    });
+  };
 
   render() {
-    const { isLoading, totalItems, items, startIndex } = this.state;
     return (
       <>
         {this.header}
         {this.state.apiType === API_TYPE.BOOKS ? this.booksComponent : this.usersComponent}
         {this.footer}
-        <FormDialog
+        {this.state.isOpen && <FormDialog
           onSave={this.onSaveUser}
           isEdit={this.state.isEdit}
           isOpen={this.state.isOpen}
           handleClose={this.handleDialogClose}
           user={this.state.user}
-        />
+        />}
       </>
     );
   }

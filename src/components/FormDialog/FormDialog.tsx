@@ -19,6 +19,7 @@ interface Props {
 
 interface State {
   open: boolean;
+  user?: User
 }
 
 export class FormDialog extends React.Component<Props, State> {
@@ -27,13 +28,25 @@ export class FormDialog extends React.Component<Props, State> {
 
     this.state = {
       open: this.props.isOpen,
+      user: this.props.user,
     };
-
   }
 
-  handleSave = () => this.props.onSave();
+  handleSave = () => this.props.onSave(this.state.user);
 
   handleClose = () => this.props.handleClose();
+
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value }: { id: string; value: string } = e.target;
+
+    this.setState((prevState: State) => ({
+        user: {
+          ...prevState.user,
+          [id]: value,
+        } as Pick<User, keyof User>,
+      }
+    ));
+  };
 
   get title() {
     return this.props.isEdit ? 'Edit user' : 'Create user';
@@ -46,17 +59,42 @@ export class FormDialog extends React.Component<Props, State> {
         <Dialog open={this.props.isOpen} onClose={this.handleClose} aria-labelledby='form-dialog-title'>
           <DialogTitle id='form-dialog-title'>{this.title}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              To subscribe to this website, please enter your email address here. We will send updates
-              occasionally.
-            </DialogContentText>
             <TextField
               autoFocus
               margin='dense'
-              id='name'
+              id='first_name'
+              label='First name'
+              type='text'
+              fullWidth
+              value={this.state.user?.first_name}
+              onChange={this.onChange}
+            />
+            <TextField
+              margin='dense'
+              id='last_name'
+              label='Last name'
+              type='text'
+              fullWidth
+              value={this.state.user?.last_name}
+              onChange={this.onChange}
+            />
+            <TextField
+              margin='dense'
+              id='email'
               label='Email Address'
               type='email'
               fullWidth
+              value={this.state.user?.email}
+              onChange={this.onChange}
+            />
+            <TextField
+              margin='dense'
+              id='avatar'
+              label='Avatar link'
+              type='url'
+              fullWidth
+              value={this.state.user?.avatar}
+              onChange={this.onChange}
             />
           </DialogContent>
           <DialogActions>
@@ -64,7 +102,7 @@ export class FormDialog extends React.Component<Props, State> {
               Cancel
             </Button>
             <Button onClick={this.handleSave} color='primary'>
-              Subscribe
+              Save user
             </Button>
           </DialogActions>
         </Dialog>
