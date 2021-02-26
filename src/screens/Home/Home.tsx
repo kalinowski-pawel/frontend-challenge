@@ -5,6 +5,7 @@ import { BooksList } from './components/BooksList/BooksList';
 import { UsersList } from './components/UsersList/UsersList';
 import { SearchBox } from './components/SearchBox/SearchBox';
 import { Pagination } from './components/Pagination/Pagination';
+import { FormDialog } from '../../components/FormDialog/FormDialog';
 import { fetchBooks } from '../../models/Books';
 import { fetch } from '../../models/Users';
 import { Book } from '../../types/Books';
@@ -17,7 +18,10 @@ interface State {
   totalItems?: number;
   searchPhrase?: string;
   startIndex?: number;
-  apiType: Type
+  apiType: Type;
+  isEdit: boolean;
+  isOpen: boolean;
+  user?: User;
 }
 
 enum Type {
@@ -38,6 +42,8 @@ export class Home extends React.Component<any, State> {
       isLoading: false,
       startIndex: 0,
       apiType: 1,
+      isEdit: false,
+      isOpen: false,
     };
   }
 
@@ -101,6 +107,8 @@ export class Home extends React.Component<any, State> {
               users={this.state.items}
               page={this.state.startIndex}
               getUsers={this.fetchUsers}
+              onDelete={this.onDeleteUser}
+              onEdit={this.onEditUser}
             />)
         }
         {!this.state.isLoading && this.state.totalItems && (<div>Total items: {this.state.totalItems}</div>)}
@@ -126,6 +134,38 @@ export class Home extends React.Component<any, State> {
     });
   };
 
+  onSaveUser = async (id?: number) => {
+    console.log('save user', id);
+    return null;
+  }
+
+  onDeleteUser = (id: number) => {
+    console.log('delete user', id);
+    return null;
+  }
+
+  // TODO check name convention for handle vs on functions
+  onEditUser = (user: User) => {
+    console.log('on edit');
+    this.setState({
+      isEdit: true,
+      isOpen: true,
+      user
+    })
+  }
+
+  onAddUser = () => {
+    this.setState({
+      isEdit: false,
+      isOpen: true,
+    })
+  };
+
+  handleDialogClose = () => {
+    this.setState({
+      isOpen: false,
+    })
+  }
 
   render() {
     const { isLoading, totalItems, items, startIndex } = this.state;
@@ -133,8 +173,14 @@ export class Home extends React.Component<any, State> {
       <>
         {this.header}
         {this.state.apiType === API_TYPE.BOOKS ? this.booksComponent : this.usersComponent}
-
         {this.footer}
+        <FormDialog
+          onSave={this.onSaveUser}
+          isEdit={this.state.isEdit}
+          isOpen={this.state.isOpen}
+          handleClose={this.handleDialogClose}
+          user={this.state.user}
+        />
       </>
     );
   }
