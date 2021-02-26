@@ -7,7 +7,7 @@ import { SearchBox } from './components/SearchBox/SearchBox';
 import { Pagination } from './components/Pagination/Pagination';
 import { FormDialog } from '../../components/FormDialog/FormDialog';
 import { fetchBooks } from '../../models/Books';
-import { fetch } from '../../models/Users';
+import { fetch, update } from '../../models/Users';
 import { Book } from '../../types/Books';
 import { User } from '../../types/Users';
 
@@ -134,9 +134,9 @@ export class Home extends React.Component<any, State> {
     });
   };
 
-  onSaveUser = async (id?: number) => {
-    console.log('save user', id);
-    return null;
+  onSaveUser = async (user: User) => {
+    console.log('save user');
+    const itemsList = await update(user, user?.id);
   };
 
   onDeleteUser = (id: number) => {

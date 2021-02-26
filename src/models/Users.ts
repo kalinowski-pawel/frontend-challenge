@@ -1,6 +1,6 @@
 import { HandleErrors } from '../common/HandleErrors';
-import { getUsers } from '../services/Users';
-import { NewUser } from '../types/Users';
+import { getUsers, updateUser } from '../services/Users';
+import { NewUser, User } from '../types/Users';
 
 export const fetch = async (page?: number) => {
   try {
@@ -12,6 +12,12 @@ export const fetch = async (page?: number) => {
 
 export const create = (data: NewUser) => {};
 
-export const update = (id: number, data: NewUser) => {};
+export const update = async (data: User, id?: number) => {
+  try {
+    return await updateUser(data, id);
+  }catch (e) {
+    return HandleErrors(e);
+  }
+};
 
 export const remove = (id: number) => {};
