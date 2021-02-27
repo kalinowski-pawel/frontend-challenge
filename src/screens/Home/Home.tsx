@@ -1,38 +1,26 @@
 import * as React from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
-import { BooksList } from './components/BooksList/BooksList';
 import { UsersList } from './components/UsersList/UsersList';
 import { SearchBox } from './components/SearchBox/SearchBox';
-import { Pagination } from './components/Pagination/Pagination';
+import { PagePagination } from './components/PagePagination/PagePagination';
 import { FormDialog } from '../../components/FormDialog/FormDialog';
-import { fetchBooks } from '../../models/Books';
 import { fetch, update } from '../../models/Users';
-import { Book } from '../../types/Books';
 import { User } from '../../types/Users';
 
+import styles from './Home.module.scss';
 
 interface State {
-  items: Book[] | User[] | [];
+  items: User[] | [];
   isLoading: boolean;
-  totalItems?: number;
+  totalPages: number;
   searchPhrase?: string;
-  startIndex?: number;
-  apiType: Type;
+  page?: number;
   isEdit: boolean;
   isOpen: boolean;
   user?: User;
 }
-
-enum Type {
-  Books,
-  Users
-}
-
-const API_TYPE = {
-  BOOKS: 0,
-  USERS: 1,
-};
 
 export class Home extends React.Component<any, State> {
   constructor(props: any) {
@@ -40,24 +28,27 @@ export class Home extends React.Component<any, State> {
     this.state = {
       items: [],
       isLoading: false,
-      startIndex: 0,
-      apiType: 1,
+      page: 0,
       isEdit: false,
       isOpen: false,
+      totalPages: 0,
     };
   }
 
-  async componentDidMount() {
-    if (this.state.apiType === API_TYPE.USERS) {
+  componentDidMount() {
+    this.setState({
+      isLoading: true
+    }, () => {
       this.fetchUsers(0);
-    }
+    })
   }
 
   onClick = async (searchPhrase: string) => {
     this.setState({
       isLoading: true,
       searchPhrase,
-    }, () => this.fetchBooks(searchPhrase));
+    }, () => {
+    }); // TODO filter users
   };
 
   get header() {
@@ -73,65 +64,34 @@ export class Home extends React.Component<any, State> {
   }
 
   get pagination() {
-    return <Pagination totalItems={this.state.totalItems} startIndex={this.state.startIndex} />;
-  }
-
-  get booksComponent() {
-    return (
-      <>
-        {this.searchBox}
-        {this.pagination}
-        {this.state.isLoading ?
-          (<div>Searching books...</div>)
-          :
-          (
-            <BooksList
-              books={this.state.items}
-              startIndex={this.state.startIndex}
-              getNextBooks={this.fetchBooks}
-            />)
-        }
-        {!this.state.isLoading && this.state.totalItems && (<div>Total items: {this.state.totalItems}</div>)}
-      </>
-    );
+    return (!this.state.isLoading && this.state.totalPages) ?
+      <PagePagination handlePagination={this.fetchUsers} totalPages={this.state.totalPages} />
+      : null;
   }
 
   get usersComponent() {
     return (
       <>
-        {this.state.isLoading ?
-          (<div>Loading users...</div>)
-          :
-          (
-            <UsersList
-              users={this.state.items}
-              page={this.state.startIndex}
-              getUsers={this.fetchUsers}
-              onDelete={this.onDeleteUser}
-              onEdit={this.onEditUser}
-            />)
-        }
-        {!this.state.isLoading && this.state.totalItems && (<div>Total items: {this.state.totalItems}</div>)}
+        <UsersList
+          users={this.state.items}
+          page={this.state.page}
+          getUsers={this.fetchUsers}
+          onDelete={this.onDeleteUser}
+          onEdit={this.onEditUser}
+        />
+        {this.pagination}
       </>
     );
   }
 
-  fetchBooks = async (searchPhrase: string, startIndex?: number) => {
-    const itemsList = await fetchBooks(searchPhrase, startIndex);
+
+  fetchUsers = async (page?: number) => {
+    const itemsList = await fetch(page);
     this.setState((prevState: State) => ({
-      items: [...prevState.items, ...itemsList?.data?.items],
-      totalItems: itemsList?.data?.totalItems,
+      items: itemsList?.data.data,
+      totalPages: itemsList.data.total_pages,
       isLoading: false,
     }));
-  };
-
-  fetchUsers = async (page: number) => {
-    const itemsList = await fetch(page);
-    this.setState({
-      items: itemsList?.data.data,
-      totalItems: itemsList?.data.total,
-      isLoading: false,
-    });
   };
 
   onSaveUser = async (user: User) => {
@@ -169,9 +129,9 @@ export class Home extends React.Component<any, State> {
 
   render() {
     return (
-      <>
+      <div className={styles.container}>
         {this.header}
-        {this.state.apiType === API_TYPE.BOOKS ? this.booksComponent : this.usersComponent}
+        {this.state.isLoading ? <div className={styles.loading}><CircularProgress color='secondary' /></div> : this.usersComponent}
         {this.footer}
         {this.state.isOpen && <FormDialog
           onSave={this.onSaveUser}
@@ -180,7 +140,7 @@ export class Home extends React.Component<any, State> {
           handleClose={this.handleDialogClose}
           user={this.state.user}
         />}
-      </>
+      </div>
     );
   }
 

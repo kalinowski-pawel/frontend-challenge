@@ -6,7 +6,9 @@ export class Footer extends React.Component<any, any> {
 
     render() {
         return (
-            <header className={styles.footer}>This is simple footer</header>
+            <footer className={styles.footer}>
+                Used API <a href="https://reqres.in/">https://reqres.in/</a>
+            </footer>
         )
     }
 }
