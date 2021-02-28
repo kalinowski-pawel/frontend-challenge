@@ -97,10 +97,10 @@ export class FormDialog extends React.Component<Props, State> {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.onClose} color='secondary'>
+            <Button onClick={this.onClose} color='secondary' variant='contained' size="small">
               Cancel
             </Button>
-            <Button onClick={this.handleSave} color='primary'>
+            <Button onClick={this.handleSave} color='primary' variant='contained' size="small">
               Save user
             </Button>
           </DialogActions>
