@@ -43,18 +43,18 @@ export class ConfirmDialog extends React.Component<Props, State> {
         aria-describedby='alert-dialog-description'
       >
         <DialogTitle id='alert-dialog-title'>
-          <Typography>Delete user</Typography>
+          Delete user
           </DialogTitle>
         <DialogContent>
           <DialogContentText id='alert-dialog-description'>
-            <Typography>User <b>{this.props.user?.first_name} {this.props.user?.last_name}</b> will be removed, are you sure?`</Typography>
+            User <b>{this.props.user?.first_name} {this.props.user?.last_name}</b> will be removed, are you sure?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.handleClose} color='primary'>
+          <Button onClick={this.handleClose} color='secondary' variant='contained' size='small'>
             Cancel
           </Button>
-          <Button onClick={this.handleSubmit} color='primary' autoFocus>
+          <Button onClick={this.handleSubmit} color='primary' variant='contained' size='small' autoFocus>
             Delete user
           </Button>
         </DialogActions>

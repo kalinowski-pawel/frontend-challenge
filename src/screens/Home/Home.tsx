@@ -1,5 +1,6 @@
 import * as React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
 import { UsersList } from './components/UsersList/UsersList';
@@ -21,6 +22,7 @@ interface State {
   isOpen: boolean;
   user?: User;
   openConfirmDialog: boolean;
+  error: string;
 }
 
 export class Home extends React.Component<any, State> {
@@ -34,6 +36,7 @@ export class Home extends React.Component<any, State> {
       isOpen: false,
       openConfirmDialog: false,
       totalPages: 0,
+      error: '',
     };
   }
 
@@ -44,14 +47,6 @@ export class Home extends React.Component<any, State> {
       this.fetchUsers(0);
     });
   }
-
-  onClick = async (searchPhrase: string) => {
-    this.setState({
-      isLoading: true,
-      searchPhrase,
-    }, () => {
-    }); // TODO filter users
-  };
 
   get pagination() {
     return (!this.state.isLoading && this.state.totalPages) ?
@@ -74,8 +69,17 @@ export class Home extends React.Component<any, State> {
     );
   }
 
-  get overlay(){
-    return this.state.isLoading ?<div className={styles.overlay}><div className={styles.loading}><CircularProgress color='secondary' /></div></div> : null;
+  get overlay() {
+    return this.state.isLoading ? <div className={styles.overlay}>
+      <div className={styles.loading}><CircularProgress color='secondary' /></div>
+    </div> : null;
+  }
+
+  get alert() {
+    return this.state.error && <Alert severity='error'>
+      <AlertTitle>Error</AlertTitle>
+      Error occur: <strong>{this.state.error}</strong>
+    </Alert>;
   }
 
   onAddUser = () => {
@@ -96,17 +100,8 @@ export class Home extends React.Component<any, State> {
   onDeleteUser = (user: User) => {
     this.setState({
       openConfirmDialog: true,
-      user
-    })
-  }
-
-  fetchUsers = async (page?: number) => {
-    const itemsList = await fetch(page);
-    this.setState((prevState: State) => ({
-      items: itemsList?.data.data,
-      totalPages: itemsList.data.total_pages,
-      isLoading: false,
-    }));
+      user,
+    });
   };
 
   onSaveUser = (user: User) => {
@@ -116,6 +111,36 @@ export class Home extends React.Component<any, State> {
     this.state.isEdit ? this.updateUser(user) : this.createUser(user);
   };
 
+  onFormDialogClose = () => {
+    this.setState({
+      isOpen: false,
+      user: undefined,
+    });
+  };
+
+  onConfirmDialogClose = () => {
+    this.setState({
+      openConfirmDialog: false,
+      user: undefined,
+    });
+  };
+
+  fetchUsers = async (page?: number) => {
+    try {
+      const itemsList = await fetch(page);
+      this.setState((prevState: State) => ({
+        items: itemsList?.data.data,
+        totalPages: itemsList.data.total_pages,
+        isLoading: false,
+      }));
+    } catch (e) {
+      this.setState({
+        isLoading: false,
+        error: e,
+      });
+    }
+  };
+
   deleteUser = async (id: number) => {
     try {
       await remove(id);
@@ -123,14 +148,16 @@ export class Home extends React.Component<any, State> {
         items: prevState.items.filter(el => (el.id !== id)),
         openConfirmDialog: false,
         isLoading: false,
-        user: undefined
+        user: undefined,
       }));
     } catch (e) {
-      console.log(e);
+      this.setState({
+        isLoading: false,
+        error: e,
+      });
     }
   };
 
-  // TODO check name convention for handle vs on functions
   updateUser = async (user: User) => {
     try {
       const updatedUser = await update(user, user?.id);
@@ -138,10 +165,13 @@ export class Home extends React.Component<any, State> {
         items: updateUsersList(prevState.items, updatedUser.data),
         isOpen: false,
         isLoading: false,
-        user: undefined
+        user: undefined,
       }));
     } catch (e) {
-      console.log(e);
+      this.setState({
+        isLoading: false,
+        error: e,
+      });
     }
   };
 
@@ -152,31 +182,21 @@ export class Home extends React.Component<any, State> {
         items: [addedUser.data, ...prevState.items],
         isOpen: false,
         isLoading: false,
-        user: undefined
+        user: undefined,
       }));
     } catch (e) {
-      console.log(e);
+      this.setState({
+        isLoading: false,
+        error: e,
+      });
     }
-  };
-
-  onFormDialogClose = () => {
-    this.setState({
-      isOpen: false,
-      user: undefined
-    });
-  };
-
-  onConfirmDialogClose = () => {
-    this.setState({
-      openConfirmDialog: false,
-      user: undefined
-    });
   };
 
   render() {
     return (
       <div className={styles.container}>
-        <Header addUser={this.onAddUser}/>
+        {this.alert}
+        {!this.state.error && <Header addUser={this.onAddUser} />}
         {this.usersComponent}
         <Footer />
         {this.overlay}
@@ -185,7 +205,7 @@ export class Home extends React.Component<any, State> {
           onClose={this.onConfirmDialogClose}
           user={this.state.user}
           open={this.state.openConfirmDialog}
-          />
+        />
         }
         {this.state.isOpen && <FormDialog
           onSave={this.onSaveUser}
