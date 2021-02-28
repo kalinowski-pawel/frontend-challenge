@@ -1,6 +1,6 @@
 import { HandleErrors } from '../common/HandleErrors';
-import { getUsers, updateUser } from '../services/Users';
-import { NewUser, User } from '../types/Users';
+import { getUsers, updateUser, createUser, removeUser } from '../services/Users';
+import { User } from '../types/Users';
 
 export const fetch = async (page?: number) => {
   try {
@@ -10,14 +10,30 @@ export const fetch = async (page?: number) => {
   }
 };
 
-export const create = (data: NewUser) => {};
-
-export const update = async (data: User, id?: number) => {
+export const create = async (data: User) => {
   try {
-    return await updateUser(data, id);
-  }catch (e) {
+    return await createUser(data);
+  } catch (e) {
     return HandleErrors(e);
   }
 };
 
-export const remove = (id: number) => {};
+export const update = async (data: User, id?: number) => {
+  try {
+    return await updateUser(data, id);
+  } catch (e) {
+    return HandleErrors(e);
+  }
+};
+
+export const remove = async (id: number) => {
+  try {
+    return await removeUser(id);
+  } catch (e) {
+    return HandleErrors(e);
+  }
+};
+
+export const updateUsersList = (usersList: User[], user: User) =>
+  usersList.map(el => (el.id === user.id ? { ...el, ...user } : el));
+

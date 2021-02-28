@@ -38,7 +38,7 @@ export function UserItem(props: Props) {
 
   // TODO add confirmation dialog
   const onDelete = () => {
-    props.onDelete(props.user?.id);
+    props.onDelete(props.user);
   };
 
   const onEdit = () => {

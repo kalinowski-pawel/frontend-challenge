@@ -1,12 +1,29 @@
-import React from "react";
+import React from 'react';
+import Button from '@material-ui/core/Button';
 
 import styles from './Header.module.scss';
 
-export class Header extends React.Component<any, any> {
+interface Props {
+  addUser: Function,
+}
 
-    render() {
-        return (
-            <header className={styles.header}>This is simple header</header>
-        )
-    }
+export class Header extends React.Component<Props, any> {
+  constructor(props: Props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <header className={styles.header}>
+        <Button
+          variant='contained'
+          color='primary'
+          size='small'
+          onClick={() => this.props.addUser()}
+        >
+          Add user
+        </Button>
+      </header>
+    );
+  }
 }

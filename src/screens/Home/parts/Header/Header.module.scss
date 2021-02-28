@@ -1,6 +1,10 @@
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   height: 50px;
   margin-bottom: 20px;
+
+  button {
+    height: 30px;
+  }
 }

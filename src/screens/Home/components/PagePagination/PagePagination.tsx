@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Pagination from '@material-ui/lab/Pagination';
+import Pagination from '@material-ui/core/Pagination';
 
 import styles from './PagePagination.module.scss';
 
@@ -28,5 +28,4 @@ export class PagePagination extends React.Component<Props, any> {
       </div>
     );
   }
-
 }
