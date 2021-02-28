@@ -5,8 +5,16 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { isValid } from '../../common/Validators';
 
 import { User } from '../../types/Users';
+
+type Form = {
+  first_name?: boolean,
+  last_name?: boolean,
+  email?: boolean,
+  avatar?: boolean,
+}
 
 interface Props {
   user?: User;
@@ -18,7 +26,8 @@ interface Props {
 
 interface State {
   open: boolean;
-  user?: User
+  user?: User,
+  error?: Form,
 }
 
 export class FormDialog extends React.Component<Props, State> {
@@ -28,6 +37,12 @@ export class FormDialog extends React.Component<Props, State> {
     this.state = {
       open: this.props.isOpen,
       user: this.props.user,
+      error: {
+        first_name: !this.props.user?.first_name,
+        last_name: !this.props.user?.last_name,
+        email: !this.props.user?.email,
+        avatar: !this.props.user?.avatar,
+      }
     };
   }
 
@@ -37,8 +52,10 @@ export class FormDialog extends React.Component<Props, State> {
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value }: { id: string; value: string } = e.target;
-
     this.setState((prevState: State) => ({
+        error: {
+          [id]: !isValid(value, id),
+        } as Pick<Form, keyof Form>,
         user: {
           ...prevState.user,
           [id]: value,
@@ -52,7 +69,6 @@ export class FormDialog extends React.Component<Props, State> {
   }
 
   render() {
-
     return (
       <div>
         <Dialog open={this.props.isOpen} onClose={this.onClose} aria-labelledby='form-dialog-title'>
@@ -60,6 +76,7 @@ export class FormDialog extends React.Component<Props, State> {
           <DialogContent>
             <TextField
               autoFocus
+              error={this.state.error?.first_name}
               margin='dense'
               id='first_name'
               label='First name'
@@ -70,6 +87,7 @@ export class FormDialog extends React.Component<Props, State> {
             />
             <TextField
               margin='dense'
+              error={this.state.error?.last_name}
               id='last_name'
               label='Last name'
               type='text'
@@ -79,6 +97,7 @@ export class FormDialog extends React.Component<Props, State> {
             />
             <TextField
               margin='dense'
+              error={this.state.error?.email}
               id='email'
               label='Email Address'
               type='email'
@@ -88,6 +107,7 @@ export class FormDialog extends React.Component<Props, State> {
             />
             <TextField
               margin='dense'
+              error={this.state.error?.avatar}
               id='avatar'
               label='Avatar link'
               type='url'
@@ -97,10 +117,10 @@ export class FormDialog extends React.Component<Props, State> {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.onClose} color='secondary' variant='contained' size="small">
+            <Button onClick={this.onClose} color='secondary' variant='contained' size='small'>
               Cancel
             </Button>
-            <Button onClick={this.handleSave} color='primary' variant='contained' size="small">
+            <Button onClick={this.handleSave} color='primary' variant='contained' size='small'>
               Save user
             </Button>
           </DialogActions>

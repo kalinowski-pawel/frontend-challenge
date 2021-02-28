@@ -162,12 +162,14 @@ export class Home extends React.Component<any, State> {
   onFormDialogClose = () => {
     this.setState({
       isOpen: false,
+      user: undefined
     });
   };
 
   onConfirmDialogClose = () => {
     this.setState({
       openConfirmDialog: false,
+      user: undefined
     });
   };
 
