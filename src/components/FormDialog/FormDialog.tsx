@@ -4,7 +4,6 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { User } from '../../types/Users';
@@ -12,7 +11,7 @@ import { User } from '../../types/Users';
 interface Props {
   user?: User;
   onSave: Function;
-  handleClose: Function;
+  onClose: Function;
   isEdit: boolean;
   isOpen: boolean;
 }
@@ -34,7 +33,7 @@ export class FormDialog extends React.Component<Props, State> {
 
   handleSave = () => this.props.onSave(this.state.user);
 
-  handleClose = () => this.props.handleClose();
+  onClose = () => this.props.onClose();
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value }: { id: string; value: string } = e.target;
@@ -56,7 +55,7 @@ export class FormDialog extends React.Component<Props, State> {
 
     return (
       <div>
-        <Dialog open={this.props.isOpen} onClose={this.handleClose} aria-labelledby='form-dialog-title'>
+        <Dialog open={this.props.isOpen} onClose={this.onClose} aria-labelledby='form-dialog-title'>
           <DialogTitle id='form-dialog-title'>{this.title}</DialogTitle>
           <DialogContent>
             <TextField
@@ -98,7 +97,7 @@ export class FormDialog extends React.Component<Props, State> {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleClose} color='secondary'>
+            <Button onClick={this.onClose} color='secondary'>
               Cancel
             </Button>
             <Button onClick={this.handleSave} color='primary'>
