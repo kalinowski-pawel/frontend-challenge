@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export function UserItem(props: Props) {
   const classes = useStyles();
 
-  // TODO add confirmation dialog
   const onDelete = () => {
     props.onDelete(props.user);
   };

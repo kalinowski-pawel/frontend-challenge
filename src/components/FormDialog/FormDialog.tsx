@@ -31,12 +31,19 @@ interface State {
 }
 
 export class FormDialog extends React.Component<Props, State> {
+  private defaultUser = {
+    first_name: '',
+    last_name: '',
+    email: '',
+    avatar: '',
+  };
+
   constructor(props: Props) {
     super(props);
 
     this.state = {
       open: this.props.isOpen,
-      user: this.props.user,
+      user: this.props.user ?? this.defaultUser,
       error: {
         first_name: !this.props.user?.first_name,
         last_name: !this.props.user?.last_name,
