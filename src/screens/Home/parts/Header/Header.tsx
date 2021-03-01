@@ -7,7 +7,7 @@ interface Props {
   addUser: Function,
 }
 
-export class Header extends React.Component<Props, any> {
+export class Header extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props);
   }

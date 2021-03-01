@@ -25,8 +25,8 @@ interface State {
   error: string;
 }
 
-export class Home extends React.Component<any, State> {
-  constructor(props: any) {
+export class Home extends React.Component<{}, State> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       items: [],

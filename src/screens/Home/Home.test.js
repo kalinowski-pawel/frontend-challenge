@@ -4,6 +4,6 @@ import { Home } from './Home';
 
 test('renders site header', () => {
   render(<Home />);
-  const linkElement = screen.getByText(/This is simple header/i);
+  const linkElement = screen.getByText(/Used API/i);
   expect(linkElement).toBeInTheDocument();
 });

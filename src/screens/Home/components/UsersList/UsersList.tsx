@@ -6,7 +6,7 @@ import { UserItem } from './Components/UserItem/UserItem';
 import { User } from '../../../../types/Users';
 
 interface Props {
-  users: User[] | any;
+  users: User[];
   getUsers: Function;
   onDelete: Function;
   onEdit: Function;

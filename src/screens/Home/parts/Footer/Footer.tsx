@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from './Footer.module.scss';
 
-export class Footer extends React.Component<any, any> {
+export class Footer extends React.Component<{}, {}> {
 
     render() {
         return (

@@ -8,7 +8,7 @@ interface Props {
   handlePagination: Function;
 }
 
-export class PagePagination extends React.Component<Props, any> {
+export class PagePagination extends React.Component<Props, {}> {
 
   constructor(props: Props) {
     super(props);
