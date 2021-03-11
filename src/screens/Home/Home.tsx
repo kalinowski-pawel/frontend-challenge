@@ -7,6 +7,7 @@ import { UsersList } from './components/UsersList/UsersList';
 import { PagePagination } from './components/PagePagination/PagePagination';
 import { dialogHOC } from '../../components/DialogHOC/DialogHOC';
 import { UserForm } from '../../components/UserForm/UserForm';
+import { RemoveUser } from '../../components/ConfirmRemoveUser/ConfirmRemoveUser';
 import { fetch, update, updateUsersList, create, remove } from '../../models/Users';
 import { User } from '../../types/Users';
 import { ACTIONS } from '../../common/constants/constants';
@@ -19,13 +20,11 @@ interface State {
   totalPages: number;
   searchPhrase?: string;
   page?: number;
-  isEdit: boolean;
+  action?: string;
   isOpenDialog: boolean;
   user?: User;
   error: string;
 }
-
-const Dialog = dialogHOC(UserForm);
 
 export class Home extends React.Component<{}, State> {
   constructor(props: {}) {
@@ -34,7 +33,6 @@ export class Home extends React.Component<{}, State> {
       items: [],
       isLoading: false,
       page: 0,
-      isEdit: false,
       isOpenDialog: false,
       totalPages: 0,
       error: '',
@@ -82,56 +80,42 @@ export class Home extends React.Component<{}, State> {
     </Alert>;
   }
 
-  onAddUser = () => {
-    this.setState({
-      isEdit: false,
-      isOpenDialog: true,
-    });
-  };
-
-  onEditUser = (user: User) => {
-    this.setState({
-      isEdit: true,
-      isOpenDialog: true,
-      user,
-    });
-  };
-
-  onDeleteUser = (user: User) => {
-    this.setState({
-      // openConfirmDialog: true,
-      user,
-    });
-  };
-
-  onSaveUser = (user: User) => {
-    this.setState({
-      isLoading: true,
-    });
-    this.state.isEdit ? this.updateUser(user) : this.createUser(user);
-  };
+  get isFormDialog() {
+    const { action } = this.state;
+    return action === ACTIONS.ADD || action === ACTIONS.EDIT;
+  }
 
   onOpenDialog = (action: string, user?: User) => {
     this.setState({
       isOpenDialog: true,
-      user
+      user,
+      action,
     });
-  }
-
-  onConfirmDialog = () => {
-    console.log('home confirm dialog');
-    this.setState({
-      isLoading: true,
-    });
-    // TODO call proper handler delete|add|edit
-  }
+  };
 
   onCloseDialog = () => {
     this.setState({
       isOpenDialog: false,
       user: undefined,
+      action: undefined,
     });
-  }
+  };
+
+  onConfirmDialog = (user: User) => {
+    console.log('home confirm dialog');
+    this.setState({
+      isLoading: true,
+    });
+
+    // TODO call proper handler delete|add|edit
+    if (this.state.action === ACTIONS.ADD) {
+      this.createUser(user);
+    } else if (this.state.action === ACTIONS.EDIT) {
+      this.updateUser(user);
+    } else if (this.state.action === ACTIONS.DELETE && user.id) {
+      this.deleteUser(user.id);
+    }
+  };
 
   fetchUsers = async (page?: number) => {
     try {
@@ -200,17 +184,19 @@ export class Home extends React.Component<{}, State> {
   };
 
   render() {
+    const Dialog = this.isFormDialog ? dialogHOC(UserForm) : dialogHOC(ConfirmRemoveUser)
+
     return (
       <div className={styles.container}>
         {this.alert}
-        {!this.state.error && <Header addUser={this.onAddUser} />}
+        {!this.state.error && <Header addUser={this.onOpenDialog} />}
         {this.usersComponent}
         <Footer />
         {this.overlay}
         {this.state.isOpenDialog && <Dialog
           onConfirm={this.onConfirmDialog}
           onClose={this.onCloseDialog}
-          isEdit={this.state.isEdit}
+          action={this.state.action}
           isOpen={this.state.isOpenDialog}
           user={this.state.user}
         />}

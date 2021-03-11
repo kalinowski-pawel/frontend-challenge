@@ -3,48 +3,54 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { User } from '../../types/Users';
 
 export interface DialogProps {
   isLoading: boolean;
-  title: string;
   isOpen: boolean;
   onClose: Function;
   onConfirm: Function;
+  action: string;
   user?: User;
 
 }
 
 export const dialogHOC: Function = <Props extends object>(Component: React.ComponentType<Props>) =>
-  class DialogHOC extends React.Component<Props & DialogProps> {
+  class WrapperDialog extends React.Component<Props & DialogProps> {
     handleClose = () => {
       console.log('close');
-      return this.props.onClose()
-    }
+      return this.props.onClose();
+    };
 
     handleConfirm = () => {
       console.log('submit');
       return this.props.onConfirm(this.props.user);
+    };
+
+    get title() {
+      const { action } = this.props;
+
+      return action ? `${ action.replace(/^./, action[0].toUpperCase()) } user` : '';
     }
 
     render() {
-      const {isOpen, isLoading, title, ...props } = this.props;
-      return(
+      console.log('up');
+      const { isOpen, isLoading, ...props } = this.props;
+      return (
         isLoading ?
           (<div>...loading</div>)
-            :
+          :
           (<Dialog
-          open={isOpen}
-          onClose={this.handleClose}
-          aria-labelledby='alert-dialog-title'
-          aria-describedby='alert-dialog-description'
-        >
-          <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
-          <DialogContent>
-            <Component {...props as Props} />
-          </DialogContent>
+            open={isOpen}
+            onClose={this.handleClose}
+            aria-labelledby='alert-dialog-title'
+            aria-describedby='alert-dialog-description'
+          >
+            <DialogTitle id='alert-dialog-title'>{this.title}</DialogTitle>
+            <DialogContent>
+              <Component {...props as Props} />
+            </DialogContent>
             <DialogActions>
               <Button
                 onClick={this.handleClose}
@@ -61,10 +67,10 @@ export const dialogHOC: Function = <Props extends object>(Component: React.Compo
                 size='small'
                 autoFocus
               >
-                Ok
+                Confirm
               </Button>
             </DialogActions>
-        </Dialog>)
-      )
+          </Dialog>)
+      );
     }
-  }
+  };

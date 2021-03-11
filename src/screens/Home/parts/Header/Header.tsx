@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import { ACTIONS } from '../../../../common/constants/constants';
 
 import styles from './Header.module.scss';
 
@@ -19,7 +20,7 @@ export class Header extends React.Component<Props, {}> {
           variant='contained'
           color='primary'
           size='small'
-          onClick={() => this.props.addUser()}
+          onClick={() => this.props.addUser(ACTIONS.ADD)}
         >
           Add user
         </Button>
