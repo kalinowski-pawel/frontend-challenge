@@ -5,22 +5,29 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { User } from '../../types/Users';
 
-interface DialogProps {
+export interface DialogProps {
   isLoading: boolean;
   title: string;
   isOpen: boolean;
   onClose: Function;
-  onSubmit: Function;
+  onConfirm: Function;
+  user?: User;
 
 }
 
-const DialogHOC = <Props extends object>(Component: React.ComponentType<Props>) =>
+export const dialogHOC: Function = <Props extends object>(Component: React.ComponentType<Props>) =>
   class DialogHOC extends React.Component<Props & DialogProps> {
+    handleClose = () => {
+      console.log('close');
+      return this.props.onClose()
+    }
 
-    handleClose = () => this.props.onClose()
-
-    handleSubmit = () => this.props.onSubmit();
+    handleConfirm = () => {
+      console.log('submit');
+      return this.props.onConfirm(this.props.user);
+    }
 
     render() {
       const {isOpen, isLoading, title, ...props } = this.props;
@@ -48,13 +55,13 @@ const DialogHOC = <Props extends object>(Component: React.ComponentType<Props>) 
                 Cancel
               </Button>
               <Button
-                onClick={this.handleSubmit}
+                onClick={this.handleConfirm}
                 color='primary'
                 variant='contained'
                 size='small'
                 autoFocus
               >
-                O
+                Ok
               </Button>
             </DialogActions>
         </Dialog>)

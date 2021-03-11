@@ -5,10 +5,11 @@ import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
 import { UsersList } from './components/UsersList/UsersList';
 import { PagePagination } from './components/PagePagination/PagePagination';
-import { FormDialog } from '../../components/FormDialog/FormDialog';
-import { ConfirmDialog } from '../../components/ConfirmDialog/ConfirmDialog';
+import { dialogHOC } from '../../components/DialogHOC/DialogHOC';
+import { UserForm } from '../../components/UserForm/UserForm';
 import { fetch, update, updateUsersList, create, remove } from '../../models/Users';
 import { User } from '../../types/Users';
+import { ACTIONS } from '../../common/constants/constants';
 
 import styles from './Home.module.scss';
 
@@ -19,11 +20,12 @@ interface State {
   searchPhrase?: string;
   page?: number;
   isEdit: boolean;
-  isOpen: boolean;
+  isOpenDialog: boolean;
   user?: User;
-  openConfirmDialog: boolean;
   error: string;
 }
+
+const Dialog = dialogHOC(UserForm);
 
 export class Home extends React.Component<{}, State> {
   constructor(props: {}) {
@@ -33,8 +35,7 @@ export class Home extends React.Component<{}, State> {
       isLoading: false,
       page: 0,
       isEdit: false,
-      isOpen: false,
-      openConfirmDialog: false,
+      isOpenDialog: false,
       totalPages: 0,
       error: '',
     };
@@ -61,8 +62,7 @@ export class Home extends React.Component<{}, State> {
           users={this.state.items}
           page={this.state.page}
           getUsers={this.fetchUsers}
-          onEdit={this.onEditUser}
-          onDelete={this.onDeleteUser}
+          onOpenDialog={this.onOpenDialog}
         />
         {this.pagination}
       </>
@@ -85,21 +85,21 @@ export class Home extends React.Component<{}, State> {
   onAddUser = () => {
     this.setState({
       isEdit: false,
-      isOpen: true,
+      isOpenDialog: true,
     });
   };
 
   onEditUser = (user: User) => {
     this.setState({
       isEdit: true,
-      isOpen: true,
+      isOpenDialog: true,
       user,
     });
   };
 
   onDeleteUser = (user: User) => {
     this.setState({
-      openConfirmDialog: true,
+      // openConfirmDialog: true,
       user,
     });
   };
@@ -111,19 +111,27 @@ export class Home extends React.Component<{}, State> {
     this.state.isEdit ? this.updateUser(user) : this.createUser(user);
   };
 
-  onFormDialogClose = () => {
+  onOpenDialog = (action: string, user?: User) => {
     this.setState({
-      isOpen: false,
-      user: undefined,
+      isOpenDialog: true,
+      user
     });
-  };
+  }
 
-  onConfirmDialogClose = () => {
+  onConfirmDialog = () => {
+    console.log('home confirm dialog');
     this.setState({
-      openConfirmDialog: false,
+      isLoading: true,
+    });
+    // TODO call proper handler delete|add|edit
+  }
+
+  onCloseDialog = () => {
+    this.setState({
+      isOpenDialog: false,
       user: undefined,
     });
-  };
+  }
 
   fetchUsers = async (page?: number) => {
     try {
@@ -146,7 +154,6 @@ export class Home extends React.Component<{}, State> {
       await remove(id);
       this.setState((prevState: State) => ({
         items: prevState.items.filter(el => (el.id !== id)),
-        openConfirmDialog: false,
         isLoading: false,
         user: undefined,
       }));
@@ -163,7 +170,7 @@ export class Home extends React.Component<{}, State> {
       const updatedUser = await update(user, user?.id);
       this.setState((prevState: State) => ({
         items: updateUsersList(prevState.items, updatedUser.data),
-        isOpen: false,
+        isOpenDialog: false,
         isLoading: false,
         user: undefined,
       }));
@@ -180,7 +187,7 @@ export class Home extends React.Component<{}, State> {
       const addedUser = await create(user);
       this.setState((prevState: State) => ({
         items: [addedUser.data, ...prevState.items],
-        isOpen: false,
+        isOpenDialog: false,
         isLoading: false,
         user: undefined,
       }));
@@ -200,18 +207,11 @@ export class Home extends React.Component<{}, State> {
         {this.usersComponent}
         <Footer />
         {this.overlay}
-        {this.state.openConfirmDialog && <ConfirmDialog
-          handleDelete={this.deleteUser}
-          onClose={this.onConfirmDialogClose}
-          user={this.state.user}
-          open={this.state.openConfirmDialog}
-        />
-        }
-        {this.state.isOpen && <FormDialog
-          onSave={this.onSaveUser}
+        {this.state.isOpenDialog && <Dialog
+          onConfirm={this.onConfirmDialog}
+          onClose={this.onCloseDialog}
           isEdit={this.state.isEdit}
-          isOpen={this.state.isOpen}
-          onClose={this.onFormDialogClose}
+          isOpen={this.state.isOpenDialog}
           user={this.state.user}
         />}
       </div>

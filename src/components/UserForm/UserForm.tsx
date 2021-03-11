@@ -1,11 +1,7 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { isValid } from '../../common/Validators';
+import { DialogProps } from '../DialogHOC/DialogHOC';
 
 import { User } from '../../types/Users';
 
@@ -16,12 +12,11 @@ type Form = {
   avatar?: boolean,
 }
 
-interface Props {
+interface Props extends DialogProps {
   user?: User;
-  onSubmit: Function;
+  onConfirm: Function;
   onClose: Function;
   isEdit: boolean;
-  isOpen: boolean;
 }
 
 interface State {
@@ -49,9 +44,10 @@ export class UserForm extends React.Component<Props, State> {
         avatar: !this.props.user?.avatar,
       },
     };
+    console.log('user form');
   }
 
-  handleSave = () => this.props.onSubmit(this.state.user);
+  handleSave = () => this.props.onConfirm(this.state.user);
 
   onClose = () => this.props.onClose();
 

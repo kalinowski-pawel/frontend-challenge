@@ -8,8 +8,7 @@ import { User } from '../../../../types/Users';
 interface Props {
   users: User[];
   getUsers: Function;
-  onDelete: Function;
-  onEdit: Function;
+  onOpenDialog: Function;
   page?: number;
 }
 
@@ -18,7 +17,6 @@ interface State {
 }
 
 export class UsersList extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
 
@@ -32,8 +30,7 @@ export class UsersList extends React.Component<Props, State> {
       <UserItem
         key={user.id}
         user={user}
-        onEdit={this.props.onEdit}
-        onDelete={this.props.onDelete}
+        onOpenDialog={this.props.onOpenDialog}
       />
       ));
   }

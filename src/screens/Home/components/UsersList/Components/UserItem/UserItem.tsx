@@ -13,11 +13,11 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { User } from '../../../../../../types/Users';
+import { ACTIONS } from '../../../../../../common/constants/constants';
 
 interface Props {
   user: User;
-  onEdit: Function;
-  onDelete: Function;
+  onOpenDialog: Function;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,11 +37,11 @@ export function UserItem(props: Props) {
   const classes = useStyles();
 
   const onDelete = () => {
-    props.onDelete(props.user);
+    props.onOpenDialog(ACTIONS.DELETE, props.user);
   };
 
   const onEdit = () => {
-    props.onEdit(props.user);
+    props.onOpenDialog(ACTIONS.EDIT, props.user);
   };
 
   return (<>
