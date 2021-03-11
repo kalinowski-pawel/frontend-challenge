@@ -24,7 +24,7 @@ used API doesn't store changes on the server.
 * Users list
 * Add user action
 * Delete chosen user
-* Edit chosen
+* Edit chosen user
 * Pagination
 * Loading overlay
 * Form edit/add validation
