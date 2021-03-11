@@ -13,29 +13,52 @@ export interface DialogProps {
   onConfirm: Function;
   action: string;
   user?: User;
+}
 
+interface State {
+  user?: User,
 }
 
 export const dialogHOC: Function = <Props extends object>(Component: React.ComponentType<Props>) =>
-  class WrapperDialog extends React.Component<Props & DialogProps> {
-    handleClose = () => {
-      console.log('close');
-      return this.props.onClose();
+  class WrapperDialog extends React.Component<Props & DialogProps, State> {
+    private defaultUser = {
+      first_name: '',
+      last_name: '',
+      email: '',
+      avatar: '',
     };
 
-    handleConfirm = () => {
-      console.log('submit');
-      return this.props.onConfirm(this.props.user);
+    constructor(props: Props & DialogProps) {
+      super(props);
+
+      this.state = {
+        user: this.props.user ?? this.defaultUser,
+      };
+    }
+
+
+    handleClose = () => this.props.onClose();
+
+    handleConfirm = () => this.props.onConfirm(this.state.user);
+
+    onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { id, value }: { id: string; value: string } = e.target;
+      this.setState((prevState: State) => ({
+          user: {
+            ...prevState.user,
+            [id]: value,
+          } as Pick<User, keyof User>,
+        }
+      ));
     };
 
     get title() {
       const { action } = this.props;
 
-      return action ? `${ action.replace(/^./, action[0].toUpperCase()) } user` : '';
+      return action ? `${action.replace(/^./, action[0].toUpperCase())} user` : '';
     }
 
     render() {
-      console.log('up');
       const { isOpen, isLoading, ...props } = this.props;
       return (
         isLoading ?
@@ -49,7 +72,7 @@ export const dialogHOC: Function = <Props extends object>(Component: React.Compo
           >
             <DialogTitle id='alert-dialog-title'>{this.title}</DialogTitle>
             <DialogContent>
-              <Component {...props as Props} />
+              <Component {...props as Props} onChange={this.onChange} user={this.state.user}/>
             </DialogContent>
             <DialogActions>
               <Button

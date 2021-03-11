@@ -5,7 +5,7 @@ import { Header } from './parts/Header/Header';
 import { Footer } from './parts/Footer/Footer';
 import { UsersList } from './components/UsersList/UsersList';
 import { PagePagination } from './components/PagePagination/PagePagination';
-import  { UserForm, RemoveUser, dialogHOC } from '../../components';
+import { UserForm, RemoveUser, dialogHOC } from '../../components';
 import { fetch, update, updateUsersList, create, remove } from '../../models/Users';
 import { User } from '../../types/Users';
 import { ACTIONS } from '../../common/constants/constants';
@@ -182,7 +182,7 @@ export class Home extends React.Component<{}, State> {
   };
 
   render() {
-    const Dialog = this.isFormDialog ? dialogHOC(UserForm) : dialogHOC(RemoveUser)
+    const Dialog = this.isFormDialog ? dialogHOC(UserForm) : dialogHOC(RemoveUser);
 
     return (
       <div className={styles.container}>

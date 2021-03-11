@@ -17,26 +17,18 @@ interface Props extends DialogProps {
   onConfirm: Function;
   onClose: Function;
   isEdit: boolean;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 interface State {
-  user?: User,
   error?: Form,
 }
 
 export class UserForm extends React.Component<Props, State> {
-  private defaultUser = {
-    first_name: '',
-    last_name: '',
-    email: '',
-    avatar: '',
-  };
-
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      user: this.props.user ?? this.defaultUser,
       error: {
         first_name: !this.props.user?.first_name,
         last_name: !this.props.user?.last_name,
@@ -44,26 +36,9 @@ export class UserForm extends React.Component<Props, State> {
         avatar: !this.props.user?.avatar,
       },
     };
-    console.log('user form');
   }
 
-  handleSave = () => this.props.onConfirm(this.state.user);
-
   onClose = () => this.props.onClose();
-
-  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value }: { id: string; value: string } = e.target;
-    this.setState((prevState: State) => ({
-        error: {
-          [id]: !isValid(value, id),
-        } as Pick<Form, keyof Form>,
-        user: {
-          ...prevState.user,
-          [id]: value,
-        } as Pick<User, keyof User>,
-      }
-    ));
-  };
 
   get title() {
     return this.props.isEdit ? 'Edit user' : 'Create user';
@@ -80,8 +55,8 @@ export class UserForm extends React.Component<Props, State> {
           label='First name'
           type='text'
           fullWidth
-          value={this.state.user?.first_name}
-          onChange={this.onChange}
+          value={this.props.user?.first_name}
+          onChange={this.props.onChange}
         />
         <TextField
           margin='dense'
@@ -90,8 +65,8 @@ export class UserForm extends React.Component<Props, State> {
           label='Last name'
           type='text'
           fullWidth
-          value={this.state.user?.last_name}
-          onChange={this.onChange}
+          value={this.props.user?.last_name}
+          onChange={this.props.onChange}
         />
         <TextField
           margin='dense'
@@ -100,8 +75,8 @@ export class UserForm extends React.Component<Props, State> {
           label='Email Address'
           type='email'
           fullWidth
-          value={this.state.user?.email}
-          onChange={this.onChange}
+          value={this.props.user?.email}
+          onChange={this.props.onChange}
         />
         <TextField
           margin='dense'
@@ -110,8 +85,8 @@ export class UserForm extends React.Component<Props, State> {
           label='Avatar link'
           type='url'
           fullWidth
-          value={this.state.user?.avatar}
-          onChange={this.onChange}
+          value={this.props.user?.avatar}
+          onChange={this.props.onChange}
         />
       </div>
     );
