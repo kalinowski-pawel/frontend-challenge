@@ -100,7 +100,7 @@ export class Home extends React.Component<{}, State> {
   };
 
   onConfirmDialog = (user: User) => {
-    console.log('home confirm dialog');
+    console.log({ user });
     this.setState({
       isLoading: true,
     });

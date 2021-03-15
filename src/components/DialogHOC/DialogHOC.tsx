@@ -5,6 +5,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { User } from '../../types/Users';
+import { isValid } from '../../common/Validators';
+
+
 
 export interface DialogProps {
   isLoading: boolean;
